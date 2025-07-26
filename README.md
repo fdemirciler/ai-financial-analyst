@@ -67,8 +67,8 @@ An AI-powered data analysis tool that allows you to upload CSV/Excel files and a
 
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
-   cd Agent_Workflow_Manus
+   git clone https://github.com/fdemirciler/ai-financial-analyst.git
+   cd ai-financial-analyst
    ```
 
 2. **Create a virtual environment**:
