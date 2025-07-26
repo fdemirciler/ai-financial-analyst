@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatCellValue } from '../utils/formatters'
 
 const DataDisplay = ({ data, columnOrder }) => {
   if (!data) return null
@@ -28,10 +29,10 @@ const DataDisplay = ({ data, columnOrder }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((row, index) => (
-              <tr key={index}>
+              <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                 {columns.map((column) => (
                   <td key={column} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {row[column]}
+                    {formatCellValue(row[column], column)}
                   </td>
                 ))}
               </tr>

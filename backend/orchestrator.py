@@ -279,8 +279,16 @@ class AnalysisOrchestrator:
         An analysis tool was run and produced the following result:
         {json.dumps(convert_numpy_types(tool_result), indent=2)}
         
-        Based on this result, provide a clear and concise natural language response to the user.
-        If the result contains data, summarize it. Do not just repeat the raw data.
+        Provide a clear, professional response in **markdown format** following these guidelines:
+        - Use ## for main section headers (e.g., ## Analysis Results)
+        - Use ### for subsections (e.g., ### Key Findings)
+        - Use **bold** for important metrics and values
+        - Use bullet points (*) for lists
+        - Use tables when comparing multiple items
+        - Include specific numbers and percentages in **bold**
+        - End with actionable insights or recommendations
+        
+        Format your response as markdown text.
         """
 
         try:

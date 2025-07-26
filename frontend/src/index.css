@@ -23,3 +23,41 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a0a0a0;
 }
+
+/* Enhanced markdown styles */
+.prose h2 {
+  @apply text-lg font-semibold text-gray-900 mt-6 mb-3 border-b border-gray-200 pb-2;
+}
+
+.prose h3 {
+  @apply text-base font-medium text-gray-800 mt-4 mb-2;
+}
+
+.prose strong {
+  @apply font-semibold text-primary-700;
+}
+
+.prose ul {
+  @apply space-y-1;
+}
+
+.prose table {
+  @apply w-full border-collapse mt-4 mb-4;
+}
+
+.prose th,
+.prose td {
+  @apply border border-gray-200 px-3 py-2 text-left;
+}
+
+.prose th {
+  @apply bg-gray-50 font-medium;
+}
+
+.prose p {
+  @apply mb-3;
+}
+
+.prose li {
+  @apply mb-1;
+}
