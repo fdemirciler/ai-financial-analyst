@@ -10,7 +10,8 @@ load_dotenv()
 class Settings(BaseSettings):
     # API Keys - Check both LLM_API_KEY and GOOGLE_API_KEY for backward compatibility
     GEMINI_API_KEY: str = Field(
-        default_factory=lambda: os.getenv("LLM_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
+        default_factory=lambda: os.getenv("LLM_API_KEY")
+        or os.getenv("GOOGLE_API_KEY", "")
     )
 
     # File upload settings
