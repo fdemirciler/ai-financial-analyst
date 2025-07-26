@@ -28,6 +28,6 @@ class ToolResponse(BaseModel):
 
 class AnalysisResponse(BaseModel):
     response: str
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[Any] = None
     visualization: Optional[Dict[str, Any]] = None
     tool_used: Optional[str] = None

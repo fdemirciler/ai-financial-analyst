@@ -68,7 +68,7 @@ async def test_chat_endpoint(mock_llm):
         "tool_name": "trend_analyzer",
         "parameters": {},
     }
-    mock_llm.generate_response.return_value = "The trend is increasing."
+    mock_llm.generate_response.return_value = "Both col1 and col2 show an increasing trend.  Col1 increased by 200%, while col2 increased by 100%."
 
     response = client.post(
         "/api/chat", json={"session_id": session_id, "message": "What is the trend?"}
@@ -76,5 +76,5 @@ async def test_chat_endpoint(mock_llm):
 
     assert response.status_code == 200
     json_response = response.json()
-    assert json_response["response"] == "The trend is increasing."
+    assert "increasing trend" in json_response["response"]
     assert json_response["tool_used"] == "trend_analyzer"

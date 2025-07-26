@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from typing import Dict, Any
 import uuid
 
@@ -11,7 +12,23 @@ from .logger import get_logger
 
 logger = get_logger(__name__)
 
-app = FastAPI(title="Analysis Agent", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info(
+        "Analysis Agent starting up",
+        extra={
+            "llm_model": settings.LLM_MODEL,
+            "max_file_size": settings.MAX_FILE_SIZE,
+        },
+    )
+    yield
+    # Shutdown
+    logger.info("Analysis Agent shutting down")
+
+
+app = FastAPI(title="Analysis Agent", version="1.0.0", lifespan=lifespan)
 
 # Add CORS middleware
 app.add_middleware(
@@ -21,17 +38,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info(
-        "Analysis Agent starting up",
-        extra={
-            "llm_model": settings.LLM_MODEL,
-            "max_file_size": settings.MAX_FILE_SIZE,
-        },
-    )
 
 
 @app.post("/api/upload")

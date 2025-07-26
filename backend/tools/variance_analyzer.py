@@ -16,40 +16,72 @@ class VarianceAnalyzer(AnalysisTool):
         self, data: pd.DataFrame, parameters: Dict[str, Any]
     ) -> Dict[str, Any]:
         try:
-            # This is a simplified variance analysis
-            # In a real implementation, you'd want more sophisticated period detection
-            variance_results = []
+            # Identify numeric columns for analysis
+            numeric_columns = data.select_dtypes(include=["number"]).columns
 
-            # For demonstration, let's assume we're comparing first half vs second half
-            if len(data) >= 2:
-                midpoint = len(data) // 2
-                period1 = data.iloc[:midpoint]
-                period2 = data.iloc[midpoint:]
+            # If specific periods are provided, use them. Otherwise, use the last two numeric columns as periods.
+            period1_col = parameters.get("period1")
+            period2_col = parameters.get("period2")
 
-                numeric_columns = data.select_dtypes(include=["number"]).columns
+            if not period1_col or not period2_col:
+                if len(numeric_columns) >= 2:
+                    period1_col = numeric_columns[-2]
+                    period2_col = numeric_columns[-1]
+                else:
+                    return {
+                        "success": False,
+                        "message": "Not enough numeric columns to compare for variance analysis.",
+                        "data": None,
+                    }
 
-                for col in numeric_columns:
-                    if col in period1.columns and col in period2.columns:
-                        mean1 = period1[col].mean() if len(period1) > 0 else 0
-                        mean2 = period2[col].mean() if len(period2) > 0 else 0
-                        variance = mean2 - mean1
-                        variance_pct = (variance / mean1 * 100) if mean1 != 0 else 0
+            if period1_col not in data.columns or period2_col not in data.columns:
+                return {
+                    "success": False,
+                    "message": f"Specified period columns ('{period1_col}', '{period2_col}') not found in data.",
+                    "data": None,
+                }
 
-                        variance_results.append(
-                            {
-                                "metric": col,
-                                "period1_average": round(mean1, 2),
-                                "period2_average": round(mean2, 2),
-                                "variance": round(variance, 2),
-                                "variance_percentage": round(variance_pct, 2),
-                            }
-                        )
+            # Identify the first non-numeric column to use as the index/metric
+            metric_column = None
+            for col in data.columns:
+                if data[col].dtype not in ["float64", "int64"]:
+                    metric_column = col
+                    break
 
-            return {
-                "success": True,
-                "results": variance_results,
-                "message": "Variance analysis completed",
+            # Calculate variance
+            variance_data = data.copy()
+            variance_data["variance"] = (
+                variance_data[period2_col] - variance_data[period1_col]
+            )
+
+            # Calculate percentage change, handle division by zero
+            variance_data["variance_percentage"] = (
+                variance_data["variance"] / variance_data[period1_col].abs()
+            ) * 100
+
+            # If a metric column was found, include it in the result
+            if metric_column:
+                result_df = variance_data[
+                    [
+                        metric_column,
+                        period1_col,
+                        period2_col,
+                        "variance",
+                        "variance_percentage",
+                    ]
+                ]
+            else:
+                result_df = variance_data[
+                    [period1_col, period2_col, "variance", "variance_percentage"]
+                ]
+
+            # Prepare results
+            results = {
+                "message": f"Variance analysis between {period1_col} and {period2_col} completed.",
+                "data": result_df.to_dict(orient="records"),
             }
+
+            return results
         except Exception as e:
             return {
                 "success": False,

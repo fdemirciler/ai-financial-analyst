@@ -50,19 +50,58 @@ class AnalysisOrchestrator:
             else:
                 raise ValueError("Unsupported file format")
 
+            logger.info(
+                f"Initial data loaded from {filename}. Head:\n{data.head().to_string()}"
+            )
+
             # Store raw data in session
             session_manager.update_session_data(session_id, data)
 
-            # Clean data
-            clean_result = await self.tools["data_cleaner"].execute(data, {})
+            # Preprocess data to identify columns to exclude
+            preprocess_result = await self.tools["data_preprocessor"].execute(data, {})
+            if not preprocess_result.get("success"):
+                raise ValueError(
+                    f"Data preprocessing failed: {preprocess_result.get('message')}"
+                )
 
-            # Convert cleaned data back to DataFrame for further processing
+            exclude_columns = preprocess_result.get("exclude_columns", [])
+            logger.info(
+                f"Preprocessor identified {len(exclude_columns)} columns to exclude: {exclude_columns}"
+            )
+
+            # Clean data, passing the exclude_columns parameter
+            clean_result = await self.tools["data_cleaner"].execute(
+                data, {"exclude_columns": exclude_columns}
+            )
+            logger.info(
+                f"Data cleaner tool result:\n{json.dumps(convert_numpy_types(clean_result), indent=2)}"
+            )
+            if not clean_result.get("success"):
+                raise ValueError(f"Data cleaning failed: {clean_result.get('message')}")
+
+            # Convert cleaned data back to DataFrame, ensuring correct types
             cleaned_df = pd.DataFrame(clean_result["data"])
+            original_dtypes = clean_result.get("dtypes", {})
+            if not cleaned_df.empty and original_dtypes:
+                # Convert columns to their original types to ensure consistency
+                # This is crucial because JSON serialization loses type information
+                cleaned_df = cleaned_df.astype(original_dtypes)
+
+            logger.info(
+                f"Reconstructed DataFrame dtypes:\n{cleaned_df.dtypes.to_string()}"
+            )
+            logger.info(
+                f"Reconstructed DataFrame head:\n{cleaned_df.head().to_string()}"
+            )
+
             session_manager.update_session_data(session_id, cleaned_df)
 
             # Analyze metadata
             metadata_result = await self.tools["metadata_analyzer"].execute(
                 cleaned_df, {}
+            )
+            logger.info(
+                f"Metadata analyzer tool result:\n{json.dumps(convert_numpy_types(metadata_result), indent=2)}"
             )
             session_manager.update_session_metadata(
                 session_id, metadata_result["metadata"]
@@ -111,18 +150,31 @@ class AnalysisOrchestrator:
 
             # Plan tool execution
             tool_plan = await self._plan_tool_execution(context)
+            tool_name = tool_plan.get("tool_name")
 
-            if not tool_plan.get("tool_name"):
-                raise ValueError("Could not determine appropriate tool")
+            if not tool_name or tool_name not in self.tools:
+                logger.warning(
+                    f"LLM failed to select a valid tool. Selected: '{tool_name}'"
+                )
+                # Fallback: if no valid tool is selected, generate a response without a tool
+                fallback_response = await self._generate_fallback_response(context)
+                return {
+                    "success": True,
+                    "response": fallback_response,
+                    "data": None,
+                    "tool_used": None,
+                }
 
             # Execute tool
-            tool_name = tool_plan["tool_name"]
             tool_params = tool_plan.get("parameters", {})
-
-            if tool_name not in self.tools:
-                raise ValueError(f"Tool '{tool_name}' not found.")
+            logger.info(f"Executing tool '{tool_name}' with parameters: {tool_params}")
+            logger.info(f"Data passed to tool. Head:\n{data.head().to_string()}")
+            logger.info(f"Data dtypes passed to tool:\n{data.dtypes.to_string()}")
 
             tool_result = await self.tools[tool_name].execute(data, tool_params)
+            logger.info(
+                f"Tool '{tool_name}' result:\n{json.dumps(convert_numpy_types(tool_result), indent=2)}"
+            )
 
             # Generate final response
             final_response = await self._generate_final_response(context, tool_result)
@@ -176,11 +228,14 @@ class AnalysisOrchestrator:
         Data Metadata:
         {json.dumps(convert_numpy_types(context['data_metadata']), indent=2)}
         
+        Today's Date: {pd.Timestamp.now().strftime('%Y-%m-%d')}
+
         Conversation History:
         {json.dumps(convert_numpy_types(context['conversation_history'][-5:]), indent=2)}
 
         Respond with a JSON object containing the 'tool_name' and any 'parameters' needed.
         Example: {{"tool_name": "variance_analyzer", "parameters": {{"period1": "2023-Q1", "period2": "2023-Q2"}}}}
+        If the user asks for the "last two periods", you should identify the two most recent years from the available data columns.
         """
 
         schema = {
@@ -235,6 +290,33 @@ class AnalysisOrchestrator:
                 exc_info=True,
             )
             return "I encountered an error while generating the final response. Please try again."
+
+    async def _generate_fallback_response(self, context: Dict[str, Any]) -> str:
+        """
+        Generates a fallback response when no tool is selected.
+        """
+        prompt = f"""
+        The user asked: "{context['user_query']}"
+
+        I was unable to select a specific tool to answer this question. 
+        Please provide a helpful response to the user. You can ask for clarification, 
+        or explain what kind of questions you can answer based on the available tools.
+        
+        Available tool descriptions:
+        {[tool.description for tool in self.tools.values()]}
+        """
+        try:
+            response = await self.llm.generate_response(
+                [{"role": "user", "content": prompt}]
+            )
+            return response
+        except Exception as e:
+            logger.error(
+                "Error generating fallback response",
+                extra={"error": str(e)},
+                exc_info=True,
+            )
+            return "I'm sorry, I couldn't understand your request. Please try rephrasing it."
 
 
 orchestrator = AnalysisOrchestrator()

@@ -1,22 +1,25 @@
 from pydantic_settings import BaseSettings
 from pydantic import Field
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class Settings(BaseSettings):
     # API Keys
-    GEMINI_API_KEY: str = Field(..., alias="LLM_API_KEY")
+    GEMINI_API_KEY: str = Field(default_factory=lambda: os.getenv("LLM_API_KEY", ""))
 
     # File upload settings
     MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB in bytes
 
     # LLM Settings
-    LLM_MODEL: str
-    LLM_TEMPERATURE: float
-    LLM_MAX_TOKENS: int
+    LLM_MODEL: str = "gemini-1.5-flash-latest"
+    LLM_TEMPERATURE: float = 0.1
+    LLM_MAX_TOKENS: int = 8192
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+    model_config = {"env_file": ".env", "extra": "ignore"}
 
 
 settings = Settings()
