@@ -71,6 +71,15 @@ class VarianceAnalyzer(AnalysisTool):
                         "variance_percentage",
                     ]
                 ]
+
+                # Rename unnamed columns to user-friendly "Metrics" for better display
+                display_metric_name = metric_column
+                if metric_column.lower().startswith("unnamed"):
+                    display_metric_name = "Metrics"
+                    result_df = result_df.rename(
+                        columns={metric_column: display_metric_name}
+                    )
+
             else:
                 # Column order: period1, period2, variance, variance_percentage
                 result_df = variance_data[
