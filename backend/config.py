@@ -8,8 +8,10 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    # API Keys
-    GEMINI_API_KEY: str = Field(default_factory=lambda: os.getenv("LLM_API_KEY", ""))
+    # API Keys - Check both LLM_API_KEY and GOOGLE_API_KEY for backward compatibility
+    GEMINI_API_KEY: str = Field(
+        default_factory=lambda: os.getenv("LLM_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
+    )
 
     # File upload settings
     MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB in bytes
