@@ -31,3 +31,4 @@ class AnalysisResponse(BaseModel):
     data: Optional[Any] = None
     visualization: Optional[Dict[str, Any]] = None
     tool_used: Optional[str] = None
+    column_order: Optional[List[str]] = None

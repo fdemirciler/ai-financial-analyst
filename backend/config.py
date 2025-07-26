@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB in bytes
 
     # LLM Settings
-    LLM_MODEL: str = "gemini-1.5-flash-latest"
+    LLM_PROVIDER: str = Field(
+        default_factory=lambda: os.getenv("LLM_PROVIDER", "gemini")
+    )
+    LLM_MODEL: str = Field(default_factory=lambda: os.getenv("LLM_MODEL", ""))
     LLM_TEMPERATURE: float = 0.1
     LLM_MAX_TOKENS: int = 8192
 

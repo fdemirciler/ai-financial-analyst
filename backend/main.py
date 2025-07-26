@@ -123,6 +123,7 @@ async def chat_endpoint(request: ChatRequest):
             response=result["response"],
             data=result.get("data"),
             tool_used=result.get("tool_used"),
+            column_order=result.get("column_order"),
         )
     except Exception as e:
         logger.error(

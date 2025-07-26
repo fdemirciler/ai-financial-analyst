@@ -41,7 +41,7 @@ class VarianceAnalyzer(AnalysisTool):
                     "data": None,
                 }
 
-            # Identify the first non-numeric column to use as the index/metric
+            # Identify the first non-numeric column to use as the index/metric (typically financial statement line items)
             metric_column = None
             for col in data.columns:
                 if data[col].dtype not in ["float64", "int64"]:
@@ -59,8 +59,9 @@ class VarianceAnalyzer(AnalysisTool):
                 variance_data["variance"] / variance_data[period1_col].abs()
             ) * 100
 
-            # If a metric column was found, include it in the result
+            # Always include the metric column if found (essential for financial statement analysis)
             if metric_column:
+                # Column order: metric, period1, period2, variance, variance_percentage
                 result_df = variance_data[
                     [
                         metric_column,
@@ -71,14 +72,21 @@ class VarianceAnalyzer(AnalysisTool):
                     ]
                 ]
             else:
+                # Column order: period1, period2, variance, variance_percentage
                 result_df = variance_data[
                     [period1_col, period2_col, "variance", "variance_percentage"]
                 ]
 
-            # Prepare results
+            # Prepare results with explicit column ordering
             results = {
+                "success": True,
                 "message": f"Variance analysis between {period1_col} and {period2_col} completed.",
                 "data": result_df.to_dict(orient="records"),
+                "periods_analyzed": {"period1": period1_col, "period2": period2_col},
+                "metric_column": metric_column,
+                "column_order": list(
+                    result_df.columns
+                ),  # Explicit column order for frontend
             }
 
             return results
@@ -87,4 +95,5 @@ class VarianceAnalyzer(AnalysisTool):
                 "success": False,
                 "error": str(e),
                 "message": f"Failed to perform variance analysis: {str(e)}",
+                "data": None,
             }

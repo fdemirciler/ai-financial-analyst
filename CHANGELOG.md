@@ -5,6 +5,73 @@ All notable changes to the Analysis Agent project will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-07-26
+
+### 🎯 Major Updates & Optimizations
+
+#### ✨ Enhanced Features
+- **Model Upgrade**: Upgraded from Gemini 1.5 Flash to **Gemini 2.5 Flash** for improved analysis accuracy
+- **Improved Period Selection**: Enhanced LLM prompting for better period selection in variance analysis
+- **Column Ordering Fix**: Fixed frontend table column display ordering for consistent data presentation
+- **Centralized Configuration**: All model configuration now centralized in `.env` file only
+
+#### 🧹 Codebase Cleanup
+- **Removed Unnecessary Test Files**: Eliminated development test files and artifacts:
+  - `test_app.py` - Manual testing script
+  - `test_specific_query.py` - Development test file
+  - `test_financial_analysis.py` - Development test file
+  - `pytest.ini` - Pytest configuration
+  - `backend/tests/` - Entire test directory
+  - `.pytest_cache/` - Pytest cache directory
+- **Removed Cache Directories**: Cleaned up all `__pycache__` directories
+- **Fixed Broken Imports**: Removed duplicate `backend/tools/init.py` with broken metadata_analyzer references
+- **Streamlined Structure**: Production-ready codebase with no development artifacts
+
+#### 🔧 Technical Improvements
+- **Enhanced API Response**: Added `column_order` field to ensure consistent frontend table display
+- **Better LLM Guidance**: Added explicit period selection rules in orchestrator prompts
+- **Configuration Management**: Single source of truth for all settings in `backend/config.py`
+
+#### 📦 Updated Project Structure
+```
+Agent_Workflow_Qwen/
+├── .env                    # Environment configuration (centralized)
+├── backend/
+│   ├── config.py          # Centralized configuration management
+│   ├── main.py            # FastAPI application
+│   ├── models.py          # Enhanced with column_order support
+│   ├── orchestrator.py    # Improved LLM prompting
+│   ├── session.py         # Session management
+│   ├── logger.py          # Logging setup
+│   ├── llm/              # LLM providers
+│   └── tools/            # Analysis tools (cleaned structure)
+├── frontend/             # React application
+├── requirements.txt      # Python dependencies
+├── test_data.csv        # Sample data
+├── README.md            # Updated documentation
+└── CHANGELOG.md         # Version history
+```
+
+### 🐛 Bug Fixes
+- **Frontend Column Ordering**: Fixed table columns displaying in wrong order (metric → period1 → period2 → variance → variance_percentage)
+- **LLM Period Selection**: Fixed variance analyzer selecting wrong periods (2023,2024 vs 2024,2025)
+- **Configuration Consistency**: Eliminated hardcoded model references throughout codebase
+
+### 🚀 Performance Improvements
+- **Cleaner Codebase**: Reduced repository size by removing unnecessary files
+- **Better Model Performance**: Gemini 2.5 Flash provides more accurate analysis and period selection
+- **Optimized Configuration**: Faster startup with centralized configuration loading
+
+### ⚡ Validation Status
+**✅ All Features Tested and Working:**
+- Column ordering displays correctly: ✅ 
+- Period selection accurate (2024 vs 2025): ✅
+- Model upgrade functional: ✅ Gemini 2.5 Flash
+- Configuration centralization: ✅ .env only
+- Codebase cleanup complete: ✅ No test artifacts
+
+---
+
 ## [1.0.0] - 2025-07-26
 
 ### 🎉 Initial Release

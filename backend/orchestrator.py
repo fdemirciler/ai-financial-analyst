@@ -6,6 +6,7 @@ from .tools import get_all_tools
 from .llm.factory import llm_factory
 from .session import session_manager
 from .logger import get_logger
+from .config import settings
 
 logger = get_logger(__name__)
 
@@ -29,7 +30,7 @@ def convert_numpy_types(obj):
 class AnalysisOrchestrator:
     def __init__(self):
         self.tools = get_all_tools()
-        self.llm = llm_factory.create_provider("gemini")
+        self.llm = llm_factory.create_provider(settings.LLM_PROVIDER)
 
     async def process_file_upload(
         self, session_id: str, file_content: bytes, filename: Optional[str]
@@ -96,15 +97,13 @@ class AnalysisOrchestrator:
 
             session_manager.update_session_data(session_id, cleaned_df)
 
-            # Analyze metadata
-            metadata_result = await self.tools["metadata_analyzer"].execute(
-                cleaned_df, {}
-            )
+            # Generate comprehensive data profile for LLM
+            profile_result = await self.tools["data_profiler"].execute(cleaned_df, {})
             logger.info(
-                f"Metadata analyzer tool result:\n{json.dumps(convert_numpy_types(metadata_result), indent=2)}"
+                f"Data profiler tool result:\n{json.dumps(convert_numpy_types(profile_result), indent=2)}"
             )
             session_manager.update_session_metadata(
-                session_id, metadata_result["metadata"]
+                session_id, profile_result["profile"]
             )
 
             return {
@@ -196,6 +195,7 @@ class AnalysisOrchestrator:
                 "response": final_response,
                 "data": tool_result.get("data"),
                 "tool_used": tool_name,
+                "column_order": tool_result.get("column_order"),
             }
         except Exception as e:
             logger.error(
@@ -233,9 +233,14 @@ class AnalysisOrchestrator:
         Conversation History:
         {json.dumps(convert_numpy_types(context['conversation_history'][-5:]), indent=2)}
 
+        IMPORTANT PERIOD SELECTION RULES:
+        - When the user asks for "last two periods" or "recent periods", use the TWO HIGHEST/MOST RECENT period values from the data
+        - Available periods from the data: {context['data_metadata'].get('periods', [])}
+        - For variance analysis, always compare the LATEST period vs the SECOND-TO-LATEST period
+        - Example: if periods are ["2022", "2023", "2024", "2025"], then "last two periods" means period1="2024", period2="2025"
+
         Respond with a JSON object containing the 'tool_name' and any 'parameters' needed.
-        Example: {{"tool_name": "variance_analyzer", "parameters": {{"period1": "2023-Q1", "period2": "2023-Q2"}}}}
-        If the user asks for the "last two periods", you should identify the two most recent years from the available data columns.
+        Example: {{"tool_name": "variance_analyzer", "parameters": {{"period1": "2024", "period2": "2025"}}}}
         """
 
         schema = {

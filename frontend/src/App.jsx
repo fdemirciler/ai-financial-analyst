@@ -68,12 +68,17 @@ function App() {
     try {
       const response = await sendMessage(sessionId, userMessage)
 
+      // Debug logging
+      console.log('Full response:', response)
+      console.log('Response column_order:', response.column_order)
+
       // Add AI response to chat
       setMessages(prev => [...prev, {
         id: Date.now(),
         content: response.response,
         isUser: false,
-        data: response.data
+        data: response.data,
+        columnOrder: response.column_order  // Pass column order if available
       }])
     } catch (error) {
       setMessages(prev => [...prev, {
@@ -134,7 +139,7 @@ function App() {
                   />
                   {message.data && (
                     <div className="max-w-3xl mx-auto">
-                      <DataDisplay data={message.data} />
+                      <DataDisplay data={message.data} columnOrder={message.columnOrder} />
                     </div>
                   )}
                 </div>

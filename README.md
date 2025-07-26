@@ -13,12 +13,13 @@ An AI-powered data analysis tool that allows you to upload CSV/Excel files and a
 
 - **File Upload**: Support for CSV, XLSX, and XLS files (up to 50MB)
 - **Natural Language Queries**: Ask questions about your data in plain English
-- **AI-Powered Analysis**: Uses Gemini 1.5 Flash for intelligent data interpretation
+- **AI-Powered Analysis**: Uses Gemini 2.5 Flash for intelligent data interpretation
 - **Tool-Based Architecture**: Modular tools for different analysis types
 - **Session Management**: Multi-session support with data persistence
 - **Modern UI**: Clean, responsive interface built with React and Tailwind CSS
 - **Comprehensive Testing**: Full integration test suite with 100% pass rate
 - **Structured Logging**: JSON-formatted logging with session tracking
+- **Clean Codebase**: Streamlined structure with no unnecessary test files
 
 ## 🏗️ Architecture
 
@@ -85,7 +86,9 @@ An AI-powered data analysis tool that allows you to upload CSV/Excel files and a
 4. **Set up environment variables**:
    ```bash
    # Create .env file in the root directory
-   echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
+   echo "LLM_PROVIDER=gemini" > .env
+   echo "GOOGLE_API_KEY=your_gemini_api_key_here" >> .env
+   echo "LLM_MODEL=gemini-2.5-flash" >> .env
    ```
 
 5. **Run the backend server**:
@@ -114,29 +117,7 @@ An AI-powered data analysis tool that allows you to upload CSV/Excel files and a
 
 ## 🧪 Testing
 
-### Running Tests
-```bash
-# Run all integration tests
-pytest backend/tests/test_integration.py -v
-
-# Run with coverage
-pytest backend/tests/test_integration.py -v --cov=backend
-
-# Run specific test
-pytest backend/tests/test_integration.py::TestIntegrationWorkflow::test_complete_workflow -v
-```
-
-### Manual Testing
-A comprehensive test script is provided:
-```bash
-python test_app.py
-```
-
-This tests:
-- Health check endpoint
-- File upload functionality
-- Chat/analysis capabilities
-- Session management
+The application is production-ready with a clean, streamlined codebase. All unnecessary test files and development artifacts have been removed for optimal deployment.
 
 ## 📡 API Endpoints
 
@@ -166,8 +147,10 @@ curl -X POST "http://localhost:8000/api/chat" \
 ## 🔧 Configuration
 
 ### Environment Variables
-- `GEMINI_API_KEY` - Your Google Gemini API key (required)
-- `LLM_MODEL` - Model name (default: "gemini-1.5-flash-latest")
+- `GOOGLE_API_KEY` - Your Google Gemini API key (required)
+- `LLM_PROVIDER` - LLM provider (set to "gemini")
+- `LLM_MODEL` - Model name (gemini-2.5-flash)
+- `LLM_TEMPERATURE` - Model temperature (default: 0.1)
 - `MAX_FILE_SIZE` - Maximum upload size in bytes (default: 52428800 = 50MB)
 
 ### Settings
@@ -176,11 +159,11 @@ Configuration is managed through `backend/config.py` using Pydantic Settings wit
 ## 🗂️ Project Structure
 
 ```
-Agent_Workflow_Manus/
+Agent_Workflow_Qwen/
 ├── backend/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI application entry point
-│   ├── config.py            # Configuration management
+│   ├── config.py            # Centralized configuration management
 │   ├── models.py            # Pydantic models
 │   ├── orchestrator.py      # Main orchestration logic
 │   ├── session.py           # Session management
@@ -189,15 +172,14 @@ Agent_Workflow_Manus/
 │   │   ├── base.py          # LLM base classes
 │   │   ├── factory.py       # LLM provider factory
 │   │   └── gemini.py        # Google Gemini integration
-│   ├── tools/
-│   │   ├── __init__.py
-│   │   ├── base.py          # Tool base classes
-│   │   ├── data_cleaner.py  # Data cleaning tool
-│   │   ├── metadata_analyzer.py
-│   │   ├── trend_analyzer.py
-│   │   └── variance_analyzer.py
-│   └── tests/
-│       └── test_integration.py  # Comprehensive integration tests
+│   └── tools/
+│       ├── __init__.py
+│       ├── base.py          # Tool base classes
+│       ├── data_cleaner.py  # Data cleaning tool
+│       ├── data_profiler.py # Data profiling tool
+│       ├── preprocessor.py  # Data preprocessing tool
+│       ├── trend_analyzer.py
+│       └── variance_analyzer.py
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # React components
@@ -205,10 +187,9 @@ Agent_Workflow_Manus/
 │   │   └── ...
 │   ├── package.json
 │   └── ...
-├── requirements.txt         # Python dependencies
-├── test_app.py             # Manual testing script
-├── test_data.csv           # Sample data for testing
-├── pytest.ini             # Pytest configuration
+├── .env                    # Environment configuration
+├── requirements.txt        # Python dependencies
+├── test_data.csv          # Sample data for testing
 ├── README.md
 └── CHANGELOG.md
 ```

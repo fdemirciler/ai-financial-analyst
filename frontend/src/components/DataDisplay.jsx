@@ -1,11 +1,15 @@
 import React from 'react'
 
-const DataDisplay = ({ data }) => {
+const DataDisplay = ({ data, columnOrder }) => {
   if (!data) return null
 
   // If it's an array of objects (like variance results)
   if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object') {
-    const columns = Object.keys(data[0])
+    // Use explicit column order if provided, otherwise use object keys
+    const columns = columnOrder || Object.keys(data[0])
+
+    // Debug logging
+    console.log('DataDisplay props:', { data: data.length, columnOrder, columns })
 
     return (
       <div className="overflow-x-auto rounded-lg border border-gray-200 mt-4">

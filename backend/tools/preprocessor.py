@@ -18,12 +18,26 @@ class DataPreprocessor(AnalysisTool):
         try:
             # Identify non-numeric columns to be excluded from cleaning
             exclude_columns = []
+
             for col in data.columns:
-                # Attempt to convert to numeric, coercing errors
+                # First try direct numeric conversion
                 numeric_series = pd.to_numeric(data[col], errors="coerce")
-                # If a column has a low percentage of numeric values, consider it non-numeric
+
+                # If direct conversion fails, try cleaning and then converting
                 if numeric_series.notna().sum() / len(data) < 0.5:
-                    exclude_columns.append(str(col))
+                    # Try cleaning currency symbols and commas first
+                    cleaned_series = (
+                        data[col]
+                        .astype(str)
+                        .str.replace(r"[$,€]", "", regex=True)
+                        .str.replace(",", "")
+                        .str.strip()
+                    )
+                    cleaned_numeric = pd.to_numeric(cleaned_series, errors="coerce")
+
+                    # If still less than 50% convertible after cleaning, exclude the column
+                    if cleaned_numeric.notna().sum() / len(data) < 0.5:
+                        exclude_columns.append(str(col))
 
             return {
                 "success": True,
