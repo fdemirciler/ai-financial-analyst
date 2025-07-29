@@ -1,44 +1,67 @@
-# Analysis Agent
+# Analysis Agent - Enhanced Edition
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![Python](https://img.shields.io/badge/python-3.13+-green)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-production--ready-success)
+![Enhanced](https://img.shields.io/badge/Enhanced_Pipeline-Active-orange)
 
-An AI-powered data analysis tool that allows you to upload CSV/Excel files and ask questions about your data using natural language. Built with FastAPI, React, and Google's Gemini AI.
+An AI-powered data analysis tool with **enhanced data processing pipeline** that allows you to upload CSV/Excel files and ask questions about your data using natural language. Built with FastAPI, React, and Google's Gemini AI, featuring advanced type inference, layout detection, and comprehensive data quality assessment.
 
-## 🚀 Features
+## 🚀 Enhanced Features
 
-- **File Upload**: Support for CSV, XLSX, and XLS files (up to 50MB)
+### **Advanced Data Processing Pipeline**
+- **🧠 Smart Type Inference**: Automatically detects currency, percentages, dates, periods, IDs, and text columns with confidence scoring
+- **📊 Layout Detection**: Recognizes wide vs. long format data and normalizes automatically
+- **🧹 Intelligent Data Cleaning**: Type-aware cleaning strategies with configurable options
+- **📈 Comprehensive Data Profiling**: Statistical analysis, correlation detection, and quality assessment
+- **📋 Complete Audit Trail**: Full logging of all data transformations with timestamps
+- **🔄 Multi-Sheet Support**: Excel files with multiple sheets processed individually
+- **⚡ Chunked Processing**: Efficient handling of large datasets with memory management
+- **🛡️ Robust Error Recovery**: Multiple fallback levels for reliable processing
+
+### **Core Features**
+- **File Upload**: Support for CSV, XLSX, and XLS files (up to 50MB) with enhanced processing
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **AI-Powered Analysis**: Uses Gemini 2.5 Flash for intelligent data interpretation
-- **Tool-Based Architecture**: Modular tools for different analysis types
-- **Session Management**: Multi-session support with data persistence
+- **Enhanced Tool Architecture**: Advanced modular tools with backward compatibility
+- **Session Management**: Multi-session support with enhanced pipeline results storage
 - **Modern UI**: Clean, responsive interface built with React and Tailwind CSS
-- **Comprehensive Testing**: Full integration test suite with 100% pass rate
-- **Structured Logging**: JSON-formatted logging with session tracking
-- **Clean Codebase**: Streamlined structure with no unnecessary test files
+- **Data Quality Scoring**: Automatic assessment of data quality (0-100 scale)
+- **Structured Logging**: JSON-formatted logging with comprehensive audit trails
 
-## 🏗️ Architecture
+## 🏗️ Enhanced Architecture
 
 ```
-[User] → [React Frontend] → [FastAPI Backend] → [Orchestrator] → [Analysis Tools] → [Gemini LLM] → [Response]
+[User] → [React Frontend] → [FastAPI Backend] → [Enhanced Orchestrator] → [Pipeline Processor] → [Enhanced Tools] → [Gemini LLM] → [Response]
+                                                                      ↓
+                                                           [Type Inference] → [Layout Detection] → [Smart Cleaning] → [Quality Assessment]
 ```
 
-### Components
+### Enhanced Components
 
-1. **Frontend** (`frontend/`): React + Vite + Tailwind CSS chat interface
-2. **Backend** (`backend/`): FastAPI server with async support and session management
-3. **Orchestrator** (`backend/orchestrator.py`): Coordinates tool execution and LLM interactions
-4. **Analysis Tools** (`backend/tools/`): 
-   - **Data Cleaner**: Standardizes and cleans uploaded data
-   - **Metadata Analyzer**: Provides comprehensive data structure analysis
-   - **Variance Analyzer**: Compares time periods and calculates statistical variances
-   - **Trend Analyzer**: Identifies data trends and patterns over time
-5. **LLM Integration** (`backend/llm/`): Flexible provider system supporting Google Gemini
-6. **Session Management** (`backend/session.py`): In-memory session storage with conversation history
+1. **Enhanced Pipeline** (`pipeline/`): Advanced data processing engine
+   - **Pipeline Orchestrator**: Main processing coordinator
+   - **Type Inferencer**: Smart semantic type detection
+   - **Layout Detector**: Wide/long format recognition and normalization
+   - **Data Cleaner**: Type-aware cleaning with configurable strategies
+   - **Data Profiler**: Comprehensive statistical analysis and quality metrics
+   - **Audit Logger**: Complete transformation tracking
+
+2. **Enhanced Data Processor** (`backend/services/`): Integration layer
+   - **Memory Processing**: Efficient in-memory data handling
+   - **Chunked Processing**: Large file support with memory management
+   - **Error Recovery**: Multi-level fallback processing
+   - **Quality Assessment**: Automatic data quality scoring and reporting
+
+3. **Enhanced Tools** (`backend/tools/enhanced_tools.py`): Advanced analysis tools
+   - **Enhanced Data Cleaner**: Type-aware cleaning with period detection
+   - **Enhanced Data Profiler**: Statistical analysis with quality metrics
+   - **Enhanced Preprocessor**: Smart type inference with confidence scoring
+
+4. **Enhanced Session Management**: Pipeline results storage and multi-sheet support
 
 ## 🛠️ Technology Stack
 
@@ -55,6 +78,77 @@ An AI-powered data analysis tool that allows you to upload CSV/Excel files and a
 - **Vite 5.0.0** - Build tool and dev server
 - **Tailwind CSS 3.3.5** - Utility-first CSS framework
 - **Axios 1.6.2** - HTTP client
+
+## 🚀 Enhanced Pipeline Capabilities
+
+### 🧠 Smart Type Inference
+The enhanced pipeline includes advanced type detection that goes beyond basic data types:
+
+- **Semantic Types**: Currency, percentage, date, period (years), ID, text
+- **Confidence Scoring**: Each type detection includes confidence levels
+- **Context Awareness**: Column names and data patterns inform type decisions
+- **Period Detection**: Automatically identifies year columns (2022, 2023, etc.) as periods
+- **Multi-Format Support**: Handles various date formats, currency symbols, and percentage notations
+
+### 📊 Layout Intelligence
+Automatically detects and handles different data layouts:
+
+- **Wide Format**: Metrics as columns (Q1, Q2, Q3, Q4 or 2022, 2023, 2024)
+- **Long Format**: Time series data with date/period columns
+- **Auto-Normalization**: Converts wide format to long format when beneficial
+- **Header Detection**: Smart identification of data vs. header rows
+
+### 🧹 Type-Aware Cleaning
+Advanced cleaning strategies based on detected column types:
+
+- **Currency Cleaning**: Removes symbols, handles negative values in parentheses
+- **Percentage Normalization**: Converts percentages to decimal format
+- **Date Standardization**: Consistent date format across the dataset
+- **Missing Value Handling**: Type-specific strategies for null values
+- **Outlier Detection**: Statistical methods for identifying anomalous values
+
+### 📈 Comprehensive Quality Assessment
+Automated data quality evaluation with detailed reporting:
+
+- **Quality Score**: Overall 0-100 quality rating
+- **Missing Value Analysis**: Percentage and pattern of missing data
+- **Data Type Consistency**: Validation of inferred types across rows
+- **Statistical Summary**: Mean, median, std dev, quartiles for numeric data
+- **Correlation Matrix**: Relationship analysis between numeric columns
+
+### 🔄 Multi-Sheet Excel Support
+Enhanced handling of complex Excel files:
+
+- **Sheet Detection**: Automatically identifies and processes all sheets
+- **Individual Processing**: Each sheet processed with its own type inference
+- **Combined Results**: Consolidated analysis across all sheets
+- **Sheet-Specific Quality**: Individual quality scores per sheet
+
+### ⚡ Performance Optimizations
+Efficient processing for large datasets:
+
+- **Chunked Processing**: Memory-efficient handling of large files
+- **Streaming Analysis**: Process data without loading entire file into memory
+- **Incremental Quality Assessment**: Real-time quality metrics during processing
+- **Parallel Processing**: Multi-threaded type inference and cleaning operations
+
+### 🛡️ Robust Error Recovery
+Multiple fallback levels ensure reliable processing:
+
+1. **Enhanced Pipeline**: Full type-aware processing
+2. **Chunked Processing**: Fallback for memory-intensive datasets
+3. **Individual Processing**: Per-column fallback for problematic data
+4. **Legacy Processing**: Basic cleaning as final fallback
+5. **Error Reporting**: Detailed error logs with specific failure points
+
+### 📋 Complete Audit Trail
+Comprehensive logging of all data transformations:
+
+- **Transformation Log**: Step-by-step record of all changes
+- **Type Inference Results**: Confidence scores and detection reasoning
+- **Quality Metrics**: Before/after quality assessments
+- **Error Documentation**: Complete error logs with context
+- **Performance Metrics**: Processing time and memory usage tracking
 
 ## 🚀 Getting Started
 
@@ -153,6 +247,45 @@ curl -X POST "http://localhost:8000/api/chat" \
 - `LLM_TEMPERATURE` - Model temperature (default: 0.1)
 - `MAX_FILE_SIZE` - Maximum upload size in bytes (default: 52428800 = 50MB)
 
+### Enhanced Pipeline Configuration
+The enhanced pipeline includes comprehensive configuration through `backend/config.py`:
+
+```python
+# Data Processing Configuration
+PIPELINE_CONFIG = {
+    "cleaner": {
+        "currency_symbols": ["$", "€", "£", "¥", "₹"],
+        "percentage_threshold": 0.8,
+        "enable_type_conversion": True,
+        "handle_missing_values": True
+    },
+    "profiler": {
+        "correlation_threshold": 0.5,
+        "outlier_detection_method": "iqr",
+        "quality_assessment": True,
+        "statistical_summary": True
+    },
+    "reader": {
+        "chunk_size": 1000,
+        "encoding_detection": True,
+        "skip_empty_rows": True,
+        "multi_sheet_support": True
+    }
+}
+```
+
+#### Type Inference Settings
+- **Confidence Thresholds**: Minimum confidence for type detection (default: 0.7)
+- **Period Detection**: Automatic detection of year columns (2000-2100 range)
+- **Currency Detection**: Multi-symbol currency recognition
+- **Date Parsing**: Flexible date format detection and parsing
+
+#### Data Quality Assessment
+- **Quality Scoring**: Automatic 0-100 quality score calculation
+- **Missing Value Analysis**: Comprehensive null value reporting
+- **Outlier Detection**: IQR and Z-score based outlier identification
+- **Correlation Analysis**: Automatic correlation matrix generation
+
 ### Settings
 Configuration is managed through `backend/config.py` using Pydantic Settings with environment variable support.
 
@@ -163,11 +296,13 @@ Agent_Workflow_Qwen/
 ├── backend/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI application entry point
-│   ├── config.py            # Centralized configuration management
+│   ├── config.py            # Centralized configuration with pipeline settings
 │   ├── models.py            # Pydantic models
-│   ├── orchestrator.py      # Main orchestration logic
-│   ├── session.py           # Session management
+│   ├── orchestrator.py      # Enhanced orchestration logic
+│   ├── session.py           # Enhanced session management
 │   ├── logger.py            # Structured logging setup
+│   ├── services/
+│   │   └── data_processor.py # Enhanced data processing service
 │   ├── llm/
 │   │   ├── base.py          # LLM base classes
 │   │   ├── factory.py       # LLM provider factory
@@ -175,11 +310,22 @@ Agent_Workflow_Qwen/
 │   └── tools/
 │       ├── __init__.py
 │       ├── base.py          # Tool base classes
-│       ├── data_cleaner.py  # Data cleaning tool
-│       ├── data_profiler.py # Data profiling tool
-│       ├── preprocessor.py  # Data preprocessing tool
+│       ├── enhanced_tools.py # Enhanced analysis tools with pipeline integration
+│       ├── data_cleaner.py  # Legacy data cleaning tool (fallback)
+│       ├── data_profiler.py # Legacy data profiling tool (fallback)
+│       ├── preprocessor.py  # Legacy data preprocessing tool (fallback)
 │       ├── trend_analyzer.py
 │       └── variance_analyzer.py
+├── pipeline/                # 🆕 Enhanced Data Processing Pipeline
+│   ├── __init__.py
+│   ├── pipeline.py          # Main pipeline orchestrator
+│   ├── type_inferencer.py   # Smart type detection engine
+│   ├── layout.py            # Layout detection and normalization
+│   ├── cleaner.py           # Type-aware data cleaning
+│   ├── profiler.py          # Advanced data profiling and quality assessment
+│   ├── audit.py             # Comprehensive audit logging
+│   ├── reader.py            # Enhanced file reading with multi-sheet support
+│   └── schemas.py           # Pipeline configuration schemas
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # React components
@@ -190,8 +336,8 @@ Agent_Workflow_Qwen/
 ├── .env                    # Environment configuration
 ├── requirements.txt        # Python dependencies
 ├── test_data.csv          # Sample data for testing
-├── README.md
-└── CHANGELOG.md
+├── README.md              # Enhanced documentation
+└── CHANGELOG.md           # Version history
 ```
 
 ## 🤝 Contributing
@@ -220,6 +366,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. **Import errors when starting the server**:
    - Make sure you're running from the project root: `python -m backend.main`
    - Check that all dependencies are installed: `pip install -r requirements.txt`
+   - Verify pipeline modules are properly installed
 
 2. **Gemini API errors**:
    - Verify your API key is correct and active
@@ -228,22 +375,86 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 3. **File upload issues**:
    - Ensure file size is under 50MB
    - Supported formats: CSV, XLSX, XLS
+   - Check for corrupted or password-protected files
 
 4. **Port conflicts**:
    - Default backend port is 8000, frontend is 5173
    - Change ports in configuration if needed
 
+5. **Enhanced Pipeline Issues**:
+   - **Type Inference Errors**: Check data format consistency
+   - **Memory Issues**: Large files automatically use chunked processing
+   - **Quality Score Problems**: Review missing value patterns
+   - **Excel Multi-Sheet Issues**: Verify sheet names and data structure
+
+### Enhanced Pipeline Debugging
+
+**Type Detection Issues**:
+```python
+# Check type inference results in logs
+# Look for confidence scores below 0.7
+# Verify period detection for year columns (2022-2100)
+```
+
+**Memory Performance**:
+- Files >50MB automatically use chunked processing
+- Monitor quality scores - low scores may indicate data issues
+- Check audit logs for transformation failures
+
+**Data Quality Issues**:
+- Quality scores below 60 indicate significant data problems
+- Review missing value percentages in pipeline results
+- Check correlation matrix for unexpected relationships
+
 ### Performance Tips
 
-- For large datasets, consider chunking the data
-- Use specific queries for better analysis results
-- Monitor memory usage with large files
+- For large datasets, the enhanced pipeline automatically optimizes processing
+- Use specific queries for better analysis results with type-aware context
+- Monitor memory usage - chunked processing activates automatically
+- Review audit logs for performance bottlenecks
+- Enhanced tools provide better context to LLM for more accurate analysis
+
+### Enhanced Features Validation
+
+**Verify Pipeline is Active**:
+- Check logs for "Enhanced pipeline processing" messages
+- Confirm type inference results in session data
+- Validate quality scores are generated (0-100 scale)
+- Review audit trail for transformation steps
 
 ## 🔮 Roadmap
 
-- [ ] Support for more file formats (JSON, Parquet)
-- [ ] Advanced visualization capabilities
-- [ ] Export analysis results
-- [ ] Real-time collaborative analysis
-- [ ] Custom tool development framework
-- [ ] Cloud deployment support
+### ✅ Completed (v2.0.0 - Enhanced Edition)
+- [x] **Advanced Data Processing Pipeline** - Complete type-aware processing system
+- [x] **Smart Type Inference** - Semantic type detection with confidence scoring
+- [x] **Layout Intelligence** - Wide/long format detection and normalization
+- [x] **Type-Aware Data Cleaning** - Intelligent cleaning strategies per data type
+- [x] **Comprehensive Data Quality Assessment** - 0-100 quality scoring system
+- [x] **Multi-Sheet Excel Support** - Full Excel workbook processing
+- [x] **Chunked Processing** - Memory-efficient large file handling
+- [x] **Robust Error Recovery** - Multi-level fallback processing
+- [x] **Complete Audit Trail** - Full transformation logging and tracking
+- [x] **Enhanced Session Management** - Pipeline results storage and retrieval
+
+### 🚧 In Progress
+- [ ] **Performance Optimization** - Further memory and speed improvements
+- [ ] **Advanced Visualization Integration** - Chart generation from pipeline results
+- [ ] **Custom Type Detection** - User-defined semantic types
+
+### 📋 Future Enhancements
+- [ ] **Support for more file formats** (JSON, Parquet, XML)
+- [ ] **Real-time data streaming** support
+- [ ] **Advanced statistical analysis** - Time series, forecasting
+- [ ] **Export enhanced analysis results** - PDF, Excel reports with quality metrics
+- [ ] **Real-time collaborative analysis** - Multi-user sessions
+- [ ] **Custom tool development framework** - User-defined analysis tools
+- [ ] **Cloud deployment support** - Docker, Kubernetes, cloud platforms
+- [ ] **Data lineage tracking** - Complete data transformation history
+- [ ] **Interactive data quality dashboard** - Visual quality assessment tools
+- [ ] **Automated data validation rules** - Custom quality checks and alerts
+
+### 🎯 Advanced Features (v3.0)
+- [ ] **Machine Learning Integration** - Automated pattern detection and predictions
+- [ ] **Natural Language Data Queries** - SQL-like queries in plain English
+- [ ] **Data Catalog Integration** - Metadata management and discovery
+- [ ] **Enterprise Security Features** - Advanced auth, encryption, audit controls
